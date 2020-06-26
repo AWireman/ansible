@@ -1,0 +1,6 @@
+---
+db_name: demo
+db_user: demo
+db_pass: "{{ vault_db_pass }}"
+ansible_user: "{{ vault_ansible_user }}"
+ansible_password: "{{ vault_ansible_password }}"

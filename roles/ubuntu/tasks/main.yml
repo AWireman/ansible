@@ -1,0 +1,11 @@
+---
+- name: install ubuntu packages
+  apt: name={{item}} state=present
+  with_items:
+        - nfs-common
+        - git
+  tags: [ 'packages' ]
+
+- name: sign into git
+  shell: git config --global user.name {{ git_user }}
+  shell: git config --global user.email {{ git_email }}

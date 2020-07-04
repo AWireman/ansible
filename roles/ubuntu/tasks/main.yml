@@ -13,4 +13,17 @@
 - name: mount drives
   shell: mdkir -p /mnt/pool
   shell: if [ -z $(grep {{ nfs_string }} /etc/fstab) ]; then echo {{ nfs_string }} >> /etc/fstab; fi
-  notify: restart
+
+- name: fix ssh config
+  shell: sed -i -e 's/{{ old_ssh_string }}/{{ new_ssh_string }}/g' /etc/ssh/sshd_config
+
+- name: add ssh keys
+  authorized_key:
+        user: awireman
+        state: present
+        key: "{{ lookup('file', '/home/awireman/.ssh/id_rsa.pub') }}" 
+ 
+- file: path=/home/awireman/.ssh state=directory owner=awireman mode=0700
+- file: path=/home/awireman/.ssh/authorized_keys state=file owner=awireman mode=0600
+
+

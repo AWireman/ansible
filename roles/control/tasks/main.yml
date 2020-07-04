@@ -5,3 +5,14 @@
         - curl
         - python-httplib2
   tags: ['packages']
+
+- name: create ssh keys if not present
+  shell: if [ ! -f /home/awireman/.ssh/id_rsa ]; then ssh-keygen -t rsa -f /home/awireman/.ssh/id_rsa -q -N ""; fi 
+
+- file: path=/home/awireman/.ssh state=directory owner=awireman mode=0700
+- file: path=/home/awireman/.ssh/id_rsa state=file owner=awireman mode=0600
+- file: path=/home/awireman/.ssh/id_rsa.pub state=file owner=awireman mode=0600
+
+- name: sign into git
+  shell: git config --global user.name {{ git_user }}
+  shell: git config --global user.email {{ git_email }}

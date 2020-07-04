@@ -1,12 +1,4 @@
 ---
-- name: remove old docker
-  apt: name={{item}} state=absent
-  with_items:
-          - docker
-          - docker-engine
-          - docker.io
-  tags: ['firstInstall']
-
 - name: install docker
   apt: name={{item}} state=present
   with_items:

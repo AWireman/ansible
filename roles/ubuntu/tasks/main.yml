@@ -9,3 +9,8 @@
 - name: sign into git
   shell: git config --global user.name {{ git_user }}
   shell: git config --global user.email {{ git_email }}
+
+- name: mount drives
+  shell: mdkir -p /mnt/pool
+  shell: if [ -z $(grep {{ nfs_string }} /etc/fstab) ]; then echo {{ nfs_string }} >> /etc/fstab; fi
+  notify: restart

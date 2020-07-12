@@ -1,27 +1,32 @@
 #!/bin/bash
-set -x
+#set -x
 install () {
 	echo "installing ansible...";
-	sudo yum install -y epel-release >/dev/null;
-	sudo yum install -y ansible >/dev/null;
+	sudo yum install -y epel-release >> /dev/null 2>&1;
+	sudo yum install -y ansible >> /dev/null 2>&1;
 }
 
 addHostname () {
 	if [[ $hostname =~ '.' ]]; then host=$(echo $hostname | cut -d '.' -f 1);
 	else host=$(echo $hostname); fi
 	hosts=$(echo $ip $hostname $host)
-	echo $hosts | sudo tee -a /etc/hosts
-	echo $host | sudo tee /etc/hostname
+	echo $hosts | sudo tee -a /etc/hosts >> /dev/null
+	echo $hostname | sudo tee /etc/hostname >> /dev/null
+	echo "[master]" | sudo tee /etc/ansible/hosts >> /dev/null
+	echo $ip | sudo tee -a /etc/ansible/hosts >> /dev/null
+	echo "[minions]" | sudo tee -a /etc/ansible/hosts >> /dev/null
+	mkdir -p ~/.ssh
+	touch ~/.ssh/known_hosts
+	ssh-keyscan -H $ip >> ~/.ssh/known_hosts
 }
 
 connectSSH () {
 if [[ $hostname =~ '.' ]]; then host=$(echo $hostname | cut -d '.' -f 1); else host=$(echo $hostname); fi
-hosts=$(echo $ip $hostname $host) 
-sshpass -p $pass ssh -tt "root@$ip" << EOF
-	echo $hosts | sudo tee -a /etc/hosts   
-	echo $host | sudo tee /etc/hostname 
-	reboot
-EOF
+hosts=$(echo $ip $hostname $host) >> /dev/null
+echo $ip | sudo tee -a /etc/ansible/hosts >> /dev/null
+ssh-keyscan -H $ip >> ~/.ssh/known_hosts
+echo "adding unique hostname on remote host..."
+sshpass -p $pass ssh -tt "root@$ip" "echo $hosts | sudo tee -a /etc/hosts; echo $host | sudo tee /etc/hostname; reboot"
 }
 
 userInput() {

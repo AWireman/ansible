@@ -25,6 +25,9 @@
    - name: disable swap
      shell: swapoff -a 
 
+   - name: disable swap on reboot
+     shell: sed -i '/swap/d' /etc/fstab
+
    - name: ensure net.bridge.bridge-nf-call-ip6tables is set to 1
      sysctl:
       name: net.bridge.bridge-nf-call-ip6tables

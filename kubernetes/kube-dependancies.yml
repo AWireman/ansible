@@ -1,5 +1,4 @@
 - hosts: all
-  connection: local
   become: yes
   tasks:
    - name: install Docker
@@ -12,7 +11,6 @@
      service:
        name: docker
        state: started
-       enabled: yes
 
    - name: disable SELinux
      command: setenforce 0
@@ -21,11 +19,11 @@
      selinux:
        state: disabled
 
-   - name: disable swap
-     command: swapoff -a
+   - name: enable docker.service
+     shell: systemctl enable docker.service
 
-   - name: disable swap on reboot
-     lineinfile: dest=/etc/fstab state=absent regexp='.swap'
+   - name: disable swap
+     shell: swapoff -a 
 
    - name: ensure net.bridge.bridge-nf-call-ip6tables is set to 1
      sysctl:
@@ -64,8 +62,10 @@
        enabled: yes
        state: started
 
+   - name: disable firewall for now
+     shell: systemctl stop firewalld
+
 - hosts: master
-  connection: local
   become: yes
   tasks:
    - name: install kubectl

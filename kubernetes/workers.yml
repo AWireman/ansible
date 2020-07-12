@@ -1,0 +1,22 @@
+- hosts: master
+  become: yes
+  gather_facts: false
+  tasks:
+    - name: get join command
+      shell: kubeadm token create --print-join-command
+      register: join_command_raw
+
+    - name: set join command
+      add_host:
+        name: join_command
+        join_command: "{{ join_command_raw.stdout_lines[0] }}"
+
+
+- hosts: minions
+  become: yes
+  tasks:
+    - name: join cluster
+      shell: "{{ hostvars['join_command']['join_command'] }} --ignore-preflight-errors all  >> node_joined.txt"
+      args:
+        chdir: $HOME
+        creates: node_joined.txt

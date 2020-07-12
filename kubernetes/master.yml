@@ -1,5 +1,4 @@
 - hosts: master
-  connection: local
   become: yes
   tasks:
     - name: initialize the cluster
